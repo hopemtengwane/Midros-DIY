@@ -9,6 +9,10 @@ const products = [
   {id:'led-driving-lamps',name:'LED driving lamps',category:'Electrical',eyebrow:'LIGHTING',description:'Ask about lamps, wiring kits and vehicle compatibility.',keywords:'led driving lamps lighting electrical',art:'art-3',mark:'LED',svg:'<path d="M28 23h44l-5 38H33l-5-38Z"/><path d="M35 31h30M38 39h24M41 47h18M43 55h14"/><path d="m28 28-9-4m9 13-11-1m12 10-10 3"/>'}
 ];
 
+// Development switch: set to false to suppress the specials modal.
+const SPECIALS_POPUP_ENABLED = true;
+const SPECIALS_POPUP_DELAY_MS = 550;
+
 let activeFilter = 'All';
 let searchTerm = '';
 let bag = JSON.parse(localStorage.getItem('midros-enquiry-bag') || '[]');
@@ -16,6 +20,8 @@ let toastTimer;
 const grid = document.getElementById('product-grid');
 const bagDrawer = document.getElementById('bag-drawer');
 const backdrop = document.getElementById('drawer-backdrop');
+const specialsModal = document.getElementById('specials-modal');
+const specialsBackdrop = document.getElementById('specials-backdrop');
 
 function itemSvg(product){return `<svg viewBox="0 0 100 84" aria-hidden="true">${product.svg}</svg>`}
 function visibleProducts(){
@@ -46,6 +52,8 @@ function renderBag(){
 function showBag(){bagDrawer.classList.add('open');backdrop.classList.add('open');bagDrawer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 function hideBag(){bagDrawer.classList.remove('open');backdrop.classList.remove('open');bagDrawer.setAttribute('aria-hidden','true');document.body.style.overflow=''}
 function showToast(message){const toast=document.getElementById('toast');toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2400)}
+function openSpecials(){if(!SPECIALS_POPUP_ENABLED||sessionStorage.getItem('midrosSpecialsDismissed')==='1')return;window.setTimeout(()=>{specialsModal.classList.add('is-open');specialsBackdrop.classList.add('is-open');specialsModal.setAttribute('aria-hidden','false');specialsBackdrop.setAttribute('aria-hidden','false');document.body.classList.add('specials-open');document.getElementById('specials-close').focus()},SPECIALS_POPUP_DELAY_MS)}
+function closeSpecials(){specialsModal.classList.remove('is-open');specialsBackdrop.classList.remove('is-open');specialsModal.setAttribute('aria-hidden','true');specialsBackdrop.setAttribute('aria-hidden','true');document.body.classList.remove('specials-open');sessionStorage.setItem('midrosSpecialsDismissed','1')}
 function selectTab(tab){document.querySelectorAll('.finder-tabs button').forEach(button=>button.classList.toggle('active',button.dataset.tab===tab));document.getElementById('vehicle-form').classList.toggle('hidden',tab!=='vehicle');document.getElementById('part-form').classList.toggle('hidden',tab!=='part');if(tab==='part')setTimeout(()=>document.getElementById('search-input').focus(),50)}
 function setFilter(filter){activeFilter=filter;searchTerm='';document.getElementById('search-input').value='';document.querySelectorAll('#filter-pills button').forEach(button=>button.classList.toggle('selected',button.dataset.filter===filter));renderProducts()}
 
@@ -64,5 +72,9 @@ document.getElementById('send-enquiry').addEventListener('click',()=>{if(!bag.le
 document.querySelectorAll('[data-focus-search]').forEach(button=>button.addEventListener('click',()=>{selectTab('part');document.getElementById('garage').scrollIntoView({behavior:'smooth'})}));
 document.getElementById('menu-toggle').addEventListener('click',()=>document.querySelector('.main-nav').classList.toggle('open'));
 document.querySelectorAll('.main-nav a').forEach(link=>link.addEventListener('click',()=>document.querySelector('.main-nav').classList.remove('open')));
+document.getElementById('specials-close').addEventListener('click',closeSpecials);
+document.getElementById('specials-later').addEventListener('click',closeSpecials);
+specialsBackdrop.addEventListener('click',closeSpecials);
+window.addEventListener('keydown',event=>{if(event.key==='Escape'&&specialsModal.classList.contains('is-open'))closeSpecials()});
 document.getElementById('year-now').textContent=new Date().getFullYear();
-renderProducts();renderBag();
+renderProducts();renderBag();openSpecials();

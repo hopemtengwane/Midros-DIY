@@ -1,17 +1,22 @@
-# MIDROS DIY storefront
+# MIDROS DIY Auto Parts
 
-A responsive static storefront concept for MIDROS DIY in Middelburg.
+A responsive storefront concept for MIDROS DIY in Middelburg, styled with the supplied logo and store photography.
 
 ## Files
 
-- `index.html` — page content and storefront structure
-- `styles.css` — responsive visual design
-- `script.js` — vehicle enquiry, category filters, catalogue search, saved items and enquiry basket
+- `index.html` — storefront, photo gallery and specials modal
+- `styles.css` — responsive layout and MIDROS green, red, black and white theme
+- `script.js` — product search, vehicle enquiry, enquiry bag and modal behavior
+- `assets/` — supplied MIDROS logo and Facebook store photos
 
-## Catalogue note
+## Specials modal switch
 
-The products are illustrative examples. Live MIDROS DIY stock, prices, product data and Shopify checkout are not connected. The enquiry basket sends a WhatsApp message so customers can ask the store to confirm fitment, price and availability.
+In `script.js`, set `SPECIALS_POPUP_ENABLED` to `true` or `false` to show or hide the opening specials modal during development. It appears once per browser session after a short delay.
+
+## Catalogue status
+
+Product cards are examples; MIDROS DIY's live inventory, prices and Shopify checkout are not connected. The enquiry bag sends a WhatsApp message so the store can confirm fitment, pricing and availability.
 
 ## Run locally
 
-Open `index.html` in a browser. The page uses Google Fonts and Unsplash-hosted photos, so those visual assets require an internet connection.
+Open `index.html` in a browser. Google Fonts are loaded online; the logo and store photography are local files in `assets/`.
