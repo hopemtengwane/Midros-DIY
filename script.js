@@ -22,6 +22,8 @@ const bagDrawer = document.getElementById('bag-drawer');
 const backdrop = document.getElementById('drawer-backdrop');
 const specialsModal = document.getElementById('specials-modal');
 const specialsBackdrop = document.getElementById('specials-backdrop');
+const popupFlyers = [...document.querySelectorAll('.popup-flyer')];
+let activePopupFlyer = 0;
 
 function itemSvg(product){return `<svg viewBox="0 0 100 84" aria-hidden="true">${product.svg}</svg>`}
 function visibleProducts(){
@@ -52,7 +54,9 @@ function renderBag(){
 function showBag(){bagDrawer.classList.add('open');backdrop.classList.add('open');bagDrawer.setAttribute('aria-hidden','false');document.body.style.overflow='hidden'}
 function hideBag(){bagDrawer.classList.remove('open');backdrop.classList.remove('open');bagDrawer.setAttribute('aria-hidden','true');document.body.style.overflow=''}
 function showToast(message){const toast=document.getElementById('toast');toast.textContent=message;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2400)}
-function openSpecials(){if(!SPECIALS_POPUP_ENABLED||sessionStorage.getItem('midrosSpecialsDismissed')==='1')return;window.setTimeout(()=>{specialsModal.classList.add('is-open');specialsBackdrop.classList.add('is-open');specialsModal.setAttribute('aria-hidden','false');specialsBackdrop.setAttribute('aria-hidden','false');document.body.classList.add('specials-open');document.getElementById('specials-close').focus()},SPECIALS_POPUP_DELAY_MS)}
+function openSpecials(index=0,force=false){if(!force&&(!SPECIALS_POPUP_ENABLED||sessionStorage.getItem('midrosSpecialsDismissed')==='1'))return;setPopupFlyer(index);specialsModal.classList.add('is-open');specialsBackdrop.classList.add('is-open');specialsModal.setAttribute('aria-hidden','false');specialsBackdrop.setAttribute('aria-hidden','false');document.body.classList.add('specials-open');document.getElementById('specials-close').focus()}
+function setPopupFlyer(index){activePopupFlyer=(index+popupFlyers.length)%popupFlyers.length;popupFlyers.forEach((image,i)=>image.classList.toggle('is-active',i===activePopupFlyer));document.getElementById('popup-count').textContent=`${String(activePopupFlyer+1).padStart(2,'0')} / ${String(popupFlyers.length).padStart(2,'0')}`}
+function movePopupFlyer(direction){setPopupFlyer(activePopupFlyer+direction)}
 function closeSpecials(){specialsModal.classList.remove('is-open');specialsBackdrop.classList.remove('is-open');specialsModal.setAttribute('aria-hidden','true');specialsBackdrop.setAttribute('aria-hidden','true');document.body.classList.remove('specials-open');sessionStorage.setItem('midrosSpecialsDismissed','1')}
 function selectTab(tab){document.querySelectorAll('.finder-tabs button').forEach(button=>button.classList.toggle('active',button.dataset.tab===tab));document.getElementById('vehicle-form').classList.toggle('hidden',tab!=='vehicle');document.getElementById('part-form').classList.toggle('hidden',tab!=='part');if(tab==='part')setTimeout(()=>document.getElementById('search-input').focus(),50)}
 function setFilter(filter){activeFilter=filter;searchTerm='';document.getElementById('search-input').value='';document.querySelectorAll('#filter-pills button').forEach(button=>button.classList.toggle('selected',button.dataset.filter===filter));renderProducts()}
@@ -73,8 +77,16 @@ document.querySelectorAll('[data-focus-search]').forEach(button=>button.addEvent
 document.getElementById('menu-toggle').addEventListener('click',()=>document.querySelector('.main-nav').classList.toggle('open'));
 document.querySelectorAll('.main-nav a').forEach(link=>link.addEventListener('click',()=>document.querySelector('.main-nav').classList.remove('open')));
 document.getElementById('specials-close').addEventListener('click',closeSpecials);
+document.querySelector('.popup-prev').addEventListener('click',()=>movePopupFlyer(-1));
+document.querySelector('.popup-next').addEventListener('click',()=>movePopupFlyer(1));
+document.querySelectorAll('.special-card').forEach((card,index)=>card.addEventListener('click',event=>{event.preventDefault();openSpecials(index,true)}));
+const specialsTrack=document.getElementById('specials-track');
+document.querySelector('.specials-track-prev').addEventListener('click',()=>specialsTrack.scrollBy({left:-specialsTrack.clientWidth*.82,behavior:'smooth'}));
+document.querySelector('.specials-track-next').addEventListener('click',()=>specialsTrack.scrollBy({left:specialsTrack.clientWidth*.82,behavior:'smooth'}));
 document.getElementById('specials-later').addEventListener('click',closeSpecials);
 specialsBackdrop.addEventListener('click',closeSpecials);
-window.addEventListener('keydown',event=>{if(event.key==='Escape'&&specialsModal.classList.contains('is-open'))closeSpecials()});
+window.addEventListener('keydown',event=>{if(!specialsModal.classList.contains('is-open'))return;if(event.key==='Escape')closeSpecials();if(event.key==='ArrowRight')movePopupFlyer(1);if(event.key==='ArrowLeft')movePopupFlyer(-1)});
+const heroSlides=[...document.querySelectorAll('.hero-slide')];
+if(heroSlides.length>1&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){let activeHeroSlide=0;window.setInterval(()=>{heroSlides[activeHeroSlide].classList.remove('is-active');activeHeroSlide=(activeHeroSlide+1)%heroSlides.length;heroSlides[activeHeroSlide].classList.add('is-active')},5200)}
 document.getElementById('year-now').textContent=new Date().getFullYear();
-renderProducts();renderBag();openSpecials();
+renderProducts();renderBag();if(SPECIALS_POPUP_ENABLED)window.setTimeout(()=>openSpecials(),SPECIALS_POPUP_DELAY_MS);

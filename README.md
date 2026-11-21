@@ -7,11 +7,11 @@ A responsive storefront concept for MIDROS DIY in Middelburg, styled with the su
 - `index.html` — storefront, photo gallery and specials modal
 - `styles.css` — responsive layout and MIDROS green, red, black and white theme
 - `script.js` — product search, vehicle enquiry, enquiry bag and modal behavior
-- `assets/` — supplied MIDROS logo and Facebook store photos
+- `assets/` — supplied MIDROS logo, store photos and six specials flyers
 
 ## Specials modal switch
 
-In `script.js`, set `SPECIALS_POPUP_ENABLED` to `true` or `false` to show or hide the opening specials modal during development. It appears once per browser session after a short delay.
+In `script.js`, set `SPECIALS_POPUP_ENABLED` to `true` or `false` to show or hide the opening specials modal during development. It appears once per browser session after a short delay. The popup includes a six-flyer carousel with arrow-key support; the homepage specials strip has six portrait cards and left/right scrolling controls. The flyers are also available directly from the specials strip.
 
 ## Catalogue status
 
@@ -19,4 +19,4 @@ Product cards are examples; MIDROS DIY's live inventory, prices and Shopify chec
 
 ## Run locally
 
-Open `index.html` in a browser. Google Fonts are loaded online; the logo and store photography are local files in `assets/`.
+Open `index.html` in a browser. Google Fonts are loaded online; the logo, store photography and specials flyers are local files in `assets/`.
